@@ -11,9 +11,11 @@ import ru.yandex.speechkit.SpeechKit;
  * Created by Artemiy Morozov on 17.04.2018.
  */
 
-public class MainPresenter {
+public class MainPresenter implements NetworkClient.OnNetworkAnswer{
 
     private String  TAG = "MainPresenter";
+
+
 
     public interface ActivityHandler{
         void onNetworkFailed();
@@ -24,6 +26,7 @@ public class MainPresenter {
     }
 
     private ActivityHandler callback;
+    private NetworkClient networkClient;
 
     public void setCallback(ActivityHandler activityHandler){
         callback = activityHandler;
@@ -39,10 +42,29 @@ public class MainPresenter {
 
 
             Log.d(TAG, "init: successful init SpeechKit");
-            callback.onSuccess();
+            networkClient = new NetworkClient();
+            networkClient.setCallback(this);
+            networkClient.execute();
         } catch (SpeechKit.LibraryInitializationException e) {
             Log.d(TAG, e.getLocalizedMessage());
             callback.onSpeechKitException(e.getLocalizedMessage());
         }
     }
+
+    @Override
+    public void onSuccess() {
+        callback.onSuccess();
+    }
+
+    @Override
+    public void onFail(int code, String message) {
+        callback.onNetworkFailed();
+    }
+
+    @Override
+    public void onException(String e) {
+        callback.onSpeechKitException(e);
+    }
+
+
 }
