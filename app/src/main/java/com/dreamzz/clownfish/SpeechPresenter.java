@@ -122,6 +122,7 @@ public class SpeechPresenter implements RecognizerListener, VocalizerListener {
                     .setEnablePunctuation(true)
                     .build();
             recognizer.prepare();
+            callback.onStopRecognize();
         } catch (Throwable throwable) {
             throwable.printStackTrace();
             Log.d(TAG, "stopRecording: " + throwable.getLocalizedMessage());

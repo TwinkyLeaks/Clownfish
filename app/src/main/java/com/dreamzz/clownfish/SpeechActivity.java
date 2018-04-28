@@ -76,6 +76,8 @@ public class SpeechActivity extends AppCompatActivity implements SpeechPresenter
     @Override
     public void onError(String error) {
         Toast.makeText(this, error, Toast.LENGTH_LONG).show();
+        recButton.setBackground(getResources().getDrawable(R.drawable.start_record_voice_img, getTheme()));
+        recordState = false;
     }
 
     @Override
