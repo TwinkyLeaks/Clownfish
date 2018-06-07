@@ -5,13 +5,11 @@ import android.app.Fragment;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
-
-import static com.dreamzz.clownfish.R.id.activity_main_fragment_container;
 
 
 public class MainActivity extends AppCompatActivity implements MainPresenter.ActivityHandler, View.OnClickListener{
@@ -50,25 +48,20 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Act
 
     @Override
     public void onNetworkFailed() {
-        clearContainer();
-        transaction = getFragmentManager().beginTransaction();
-        ErrorFragment fragment = new ErrorFragment();
-        fragment.setOnClickListener(this);
-        transaction.add(activity_main_fragment_container, fragment);
-        fragment.setErrorText("Что-то пошло не так");
-        currentFragment = fragment;
-        transaction.commit();
+        Toast.makeText(this, "Нет подключения к Интернету", Toast.LENGTH_LONG);
+        Intent intent = new Intent(this, NoteActivity.class);
+        startActivity(intent);
     }
 
     @Override
     public void onSuccess() {
-        Intent intent = new Intent(this, SpeechActivity.class);
+        Intent intent = new Intent(this, NoteActivity.class);
         startActivity(intent);
     }
 
     @Override
     public void onSpeechKitException(String error) {
-        clearContainer();
+        /*clearContainer();
         transaction = getFragmentManager().beginTransaction();
         ErrorFragment fragment = new ErrorFragment();
         fragment.setOnClickListener(this);
@@ -77,17 +70,18 @@ public class MainActivity extends AppCompatActivity implements MainPresenter.Act
 
 
         currentFragment = fragment;
-        transaction.commit();
+        transaction.commit();*/
+        Toast.makeText(this, error, Toast.LENGTH_LONG);
     }
 
     @Override
     public void onLoading() {
-        clearContainer();
+        /*clearContainer();
         transaction = getFragmentManager().beginTransaction();
         LoadingFragment fragment = new LoadingFragment();
         transaction.add(activity_main_fragment_container, fragment);
         currentFragment = fragment;
-        transaction.commit();
+        transaction.commit();*/
 
     }
 

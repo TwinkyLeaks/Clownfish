@@ -2,30 +2,54 @@ package com.dreamzz.clownfish;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
-import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.os.Bundle;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.Objects;
 
 import ru.yandex.speechkit.Language;
 import ru.yandex.speechkit.Vocalizer;
 
 public class SpeechActivity extends AppCompatActivity implements SpeechPresenter.OnSpeechEvent, View.OnClickListener {
 
-    private Button recButton, speechButton, changeLanguageButton;
+    private Button recButton, speechButton, changeLanguageButton, exitButton, saveButton;
     private boolean recordState;
     private TextView textView;
     private SpeechPresenter presenter;
     private String TAG = "SpeechActivity: ";
     private static int REQUEST_PERMISSION_CODE = 31;
+
+    private void exit(){
+        this.onDestroy();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        SpeechActivity that = (SpeechActivity) o;
+        return recordState == that.recordState &&
+                Objects.equals(recButton, that.recButton) &&
+                Objects.equals(speechButton, that.speechButton) &&
+                Objects.equals(changeLanguageButton, that.changeLanguageButton) &&
+                Objects.equals(textView, that.textView) &&
+                Objects.equals(presenter, that.presenter) &&
+                Objects.equals(TAG, that.TAG);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(recButton, speechButton, changeLanguageButton, recordState, textView, presenter, TAG);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +74,10 @@ public class SpeechActivity extends AppCompatActivity implements SpeechPresenter
         speechButton.setOnClickListener(this);
         changeLanguageButton = (Button) findViewById(R.id.speech_lang_button);
         changeLanguageButton.setOnClickListener(this);
+        exitButton = (Button) findViewById(R.id.speech_cancel_button);
+        exitButton.setOnClickListener(this);
+        saveButton = (Button) findViewById(R.id.speech_save_button);
+        saveButton.setOnClickListener(this);
 
     }
 
@@ -97,9 +125,15 @@ public class SpeechActivity extends AppCompatActivity implements SpeechPresenter
     }
 
     @Override
+    public void onExit() {
+        exit();
+    }
+
+    @Override
     public void onClick(View v) {
         switch (v.getId()){
             case R.id.speech_rec_button:
+                presenter.setRecState(false);
                 Log.d(TAG, "onClick: rec_button " + recordState);
                 if(recordState){
                     presenter.stopRecording();
@@ -109,6 +143,11 @@ public class SpeechActivity extends AppCompatActivity implements SpeechPresenter
                     recordState = true;
                 }
                 break;
+            case R.id.speech_save_button:
+                presenter.addNote(textView.getText().toString());
+                break;
+            case R.id.speech_cancel_button:
+                exit();
             case R.id.speech_play_button:
                 if(textView.getText().toString().compareTo("") != 0){
                     presenter.startSynthesis(textView.getText().toString());

@@ -7,6 +7,9 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 
+import java.io.IOException;
+import java.util.Date;
+
 import ru.yandex.speechkit.Emotion;
 import ru.yandex.speechkit.Error;
 import ru.yandex.speechkit.Language;
@@ -44,6 +47,8 @@ public class SpeechPresenter implements RecognizerListener, VocalizerListener {
         void onPermissionNeed(String[] permissions, int[] modes);
 
         void onStartRecognize();
+
+        void onExit();
     }
 
     private OnSpeechEvent callback;
@@ -51,8 +56,12 @@ public class SpeechPresenter implements RecognizerListener, VocalizerListener {
     private OnlineVocalizer vocalizer;
     private Language currentLanguage;
     private Context context;
+    private boolean recState = true;
     private String TAG = "SpeechPresenter: ";
 
+    public void setRecState(boolean recState) {
+        this.recState = recState;
+    }
 
     public void setContext(Context context) {
         this.context = context;
@@ -63,6 +72,7 @@ public class SpeechPresenter implements RecognizerListener, VocalizerListener {
     }
 
     public void init() {
+        recState = true;
         currentLanguage = Language.RUSSIAN;
         recognizer = new OnlineRecognizer.Builder(currentLanguage, OnlineModel.QUERIES, this)
                 .setDisableAntimat(true)
@@ -79,23 +89,25 @@ public class SpeechPresenter implements RecognizerListener, VocalizerListener {
     }
 
     public void changeLanguage() {
-        if (currentLanguage == Language.RUSSIAN) {
-            currentLanguage = Language.ENGLISH;
-        } else {
-            currentLanguage = Language.RUSSIAN;
+        if(recState){
+            if (currentLanguage == Language.RUSSIAN) {
+                currentLanguage = Language.ENGLISH;
+            } else {
+                currentLanguage = Language.RUSSIAN;
+            }
+            recognizer = new OnlineRecognizer.Builder(currentLanguage, OnlineModel.QUERIES, this)
+                    .setDisableAntimat(true)
+                    .setEnablePunctuation(true)
+                    .build();
+            recognizer.prepare();
+            vocalizer = new OnlineVocalizer.Builder(currentLanguage, this)
+                    .setEmotion(Emotion.GOOD)
+                    .setQuality(Quality.HIGH)
+                    .setVoice(Voice.ALYSS)
+                    .build();
+            vocalizer.prepare();
+            callback.onChangeLanguage(currentLanguage);
         }
-        recognizer = new OnlineRecognizer.Builder(currentLanguage, OnlineModel.QUERIES, this)
-                .setDisableAntimat(true)
-                .setEnablePunctuation(true)
-                .build();
-        recognizer.prepare();
-        vocalizer = new OnlineVocalizer.Builder(currentLanguage, this)
-                .setEmotion(Emotion.GOOD)
-                .setQuality(Quality.HIGH)
-                .setVoice(Voice.ALYSS)
-                .build();
-        vocalizer.prepare();
-        callback.onChangeLanguage(currentLanguage);
     }
 
     public void startSynthesis(String str) {
@@ -112,6 +124,15 @@ public class SpeechPresenter implements RecognizerListener, VocalizerListener {
             callback.onStartRecognize();
         }
 
+    }
+
+    public void addNote(String text){
+        try {
+            FileHandler.addNote(new Note(text, new Date(), currentLanguage));
+        } catch (IOException e) {
+            Log.d(TAG, e.getLocalizedMessage());
+            callback.onError(e.getLocalizedMessage());
+        }
     }
 
     public void stopRecording(){

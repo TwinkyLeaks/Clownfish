@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Hello, My name is John Appleseed.I'm 20 years old. Every day I eat some apples"
+        android:textAlignment="textStart"
+        android:layout_marginLeft="20dp"
+        android:paddingRight="40dp"
+        android:textSize="24sp"
+        android:id="@+id/note_item_text"
+        android:textColor="#fff"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@+id/note_item_text"
+        android:id="@+id/note_item_date"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="20dp"
+        android:text="21.05.2018"
+        android:textColor="#e2e2e2"/>
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_alignParentStart="true"
+        android:layout_below="@id/note_item_date"
+        android:paddingLeft="100dp"
+        android:src="@drawable/item_pop_list_view" />
+
+
+</RelativeLayout>

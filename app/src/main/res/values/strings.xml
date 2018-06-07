@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Clownfish</string>
+    <string name="note_not_found">Вы еще не создали ни одной заметки</string>
 </resources>

@@ -3,6 +3,7 @@ package com.dreamzz.clownfish;
 import android.content.Context;
 import android.util.Log;
 
+import java.io.IOException;
 import java.util.UUID;
 
 import ru.yandex.speechkit.SpeechKit;
@@ -45,7 +46,11 @@ public class MainPresenter implements NetworkClient.OnNetworkAnswer{
             networkClient = new NetworkClient();
             networkClient.setCallback(this);
             networkClient.execute();
+            FileHandler.init(appContext);
         } catch (SpeechKit.LibraryInitializationException e) {
+            Log.d(TAG, e.getLocalizedMessage());
+            callback.onSpeechKitException(e.getLocalizedMessage());
+        } catch (IOException e) {
             Log.d(TAG, e.getLocalizedMessage());
             callback.onSpeechKitException(e.getLocalizedMessage());
         }
