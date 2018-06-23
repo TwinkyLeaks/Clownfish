@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 public class NoteAdapter extends BaseAdapter {
@@ -42,12 +43,13 @@ public class NoteAdapter extends BaseAdapter {
         if(view == null){
             view = inflater.inflate(R.layout.item_note, viewGroup, false);
         }
-        Note note = getItem(i);
+        Note note = getItem(getCount()-i-1);
         TextView text, date;
         text = (TextView) view.findViewById(R.id.note_item_text);
         date = (TextView) view.findViewById(R.id.note_item_date);
         text.setText(note.getText());
-        date.setText(note.getDate().toString());
+        SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm dd.MM.yyyy");
+        date.setText(dateFormat.format(note.getDate()));
         return view;
     }
 }

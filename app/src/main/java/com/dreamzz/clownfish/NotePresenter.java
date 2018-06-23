@@ -32,7 +32,10 @@ public class NotePresenter implements VocalizerListener {
 
     public void init(){
         ArrayList<Note> notes = FileHandler.getNotes();
-
+        /*ArrayList<Note> foo = new ArrayList<>();
+        for (int i = notes.size(); i>=0; i--){
+            foo.add(notes.get(i));
+        }*/
         if(notes.size() == 0 || notes == null){
             callback.onNoteNotFound();
         }else{

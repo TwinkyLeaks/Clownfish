@@ -1,6 +1,7 @@
 package com.dreamzz.clownfish;
 
 import android.Manifest;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -28,7 +29,7 @@ public class SpeechActivity extends AppCompatActivity implements SpeechPresenter
     private static int REQUEST_PERMISSION_CODE = 31;
 
     private void exit(){
-        this.onDestroy();
+        this.finish();
     }
 
     @Override
@@ -55,6 +56,7 @@ public class SpeechActivity extends AppCompatActivity implements SpeechPresenter
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_speech);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         recordState = false;
         presenter = new SpeechPresenter();
         presenter.setContext(this);
@@ -67,7 +69,6 @@ public class SpeechActivity extends AppCompatActivity implements SpeechPresenter
 
         }
         textView = (TextView) findViewById(R.id.note_text_view);
-        textView.setText("");
         recButton = (Button) findViewById(R.id.speech_rec_button);
         recButton.setOnClickListener(this);
         speechButton = (Button) findViewById(R.id.speech_play_button);

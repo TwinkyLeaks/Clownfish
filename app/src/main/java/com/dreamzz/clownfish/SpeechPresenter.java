@@ -127,11 +127,15 @@ public class SpeechPresenter implements RecognizerListener, VocalizerListener {
     }
 
     public void addNote(String text){
-        try {
-            FileHandler.addNote(new Note(text, new Date(), currentLanguage));
-        } catch (IOException e) {
-            Log.d(TAG, e.getLocalizedMessage());
-            callback.onError(e.getLocalizedMessage());
+        if(text!=null || !text.equals("")){
+            try {
+                FileHandler.addNote(new Note(text, new Date(), currentLanguage));
+            } catch (IOException e) {
+                Log.d(TAG, e.getLocalizedMessage());
+                callback.onError(e.getLocalizedMessage());
+            }
+        }else{
+            callback.onError("Заметка пустая");
         }
     }
 

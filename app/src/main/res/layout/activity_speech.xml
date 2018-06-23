@@ -17,7 +17,8 @@
         <Button
             android:id="@+id/speech_cancel_button"
             android:layout_width="50dp"
-            android:layout_height="50dp"/>
+            android:layout_height="50dp"
+            android:background="@drawable/canel_img"/>
 
         <Button
             android:background="@drawable/language_russian_img"
@@ -52,6 +53,7 @@
 
         <Button
             android:id="@+id/speech_save_button"
+            android:background="@drawable/add_note_img"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_marginLeft="10dp"/>

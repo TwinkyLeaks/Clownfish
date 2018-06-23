@@ -1,6 +1,8 @@
 package com.dreamzz.clownfish;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.util.Log;
 
 import java.io.IOException;
@@ -28,13 +30,14 @@ public class MainPresenter implements NetworkClient.OnNetworkAnswer{
 
     private ActivityHandler callback;
     private NetworkClient networkClient;
+    private Context context;
 
     public void setCallback(ActivityHandler activityHandler){
         callback = activityHandler;
     }
 
     public void init(Context appContext){
-
+        context = appContext;
         try {
             callback.onLoading();
             Log.d(TAG, "init: start init SpeechKit");
@@ -43,10 +46,15 @@ public class MainPresenter implements NetworkClient.OnNetworkAnswer{
 
 
             Log.d(TAG, "init: successful init SpeechKit");
-            networkClient = new NetworkClient();
-            networkClient.setCallback(this);
-            networkClient.execute();
+                if(hasConnection(appContext)){
+                    networkClient = new NetworkClient();
+                    networkClient.setCallback(this);
+                    networkClient.execute();
+                }else{
+                    callback.onNetworkFailed();
+                }
             FileHandler.init(appContext);
+
         } catch (SpeechKit.LibraryInitializationException e) {
             Log.d(TAG, e.getLocalizedMessage());
             callback.onSpeechKitException(e.getLocalizedMessage());
@@ -54,6 +62,27 @@ public class MainPresenter implements NetworkClient.OnNetworkAnswer{
             Log.d(TAG, e.getLocalizedMessage());
             callback.onSpeechKitException(e.getLocalizedMessage());
         }
+    }
+
+    public static boolean hasConnection(Context context)
+    {
+        ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo wifiInfo = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        if (wifiInfo != null && wifiInfo.isConnected())
+        {
+            return true;
+        }
+        wifiInfo = cm.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+        if (wifiInfo != null && wifiInfo.isConnected())
+        {
+            return true;
+        }
+        wifiInfo = cm.getActiveNetworkInfo();
+        if (wifiInfo != null && wifiInfo.isConnected())
+        {
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -68,7 +97,7 @@ public class MainPresenter implements NetworkClient.OnNetworkAnswer{
 
     @Override
     public void onException(String e) {
-        callback.onSpeechKitException(e);
+        callback.onNetworkFailed();
     }
 
 

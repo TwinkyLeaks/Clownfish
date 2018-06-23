@@ -1,15 +1,19 @@
 package com.dreamzz.clownfish;
 
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.animation.BounceInterpolator;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,7 +33,7 @@ public class NoteActivity extends AppCompatActivity implements SwipeMenuListView
     private SwipeMenuListView listView;
     private ProgressBar progressBar;
     private TextView textView;
-    private Button startSpeechButton;
+    private FloatingActionButton startSpeechButton;
 
     private ArrayList<Note> notes;
     private boolean networkState;
@@ -38,6 +42,7 @@ public class NoteActivity extends AppCompatActivity implements SwipeMenuListView
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_note);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         presenter = new NotePresenter();
         presenter.setCallback(this);
 
@@ -48,8 +53,9 @@ public class NoteActivity extends AppCompatActivity implements SwipeMenuListView
         listView.setCloseInterpolator(new BounceInterpolator());
         listView.setOpenInterpolator(new BounceInterpolator());
         textView = (TextView) findViewById(R.id.note_not_found);
-        startSpeechButton = (Button) findViewById(R.id.note_add_note);
+        startSpeechButton = (FloatingActionButton) findViewById(R.id.note_add_note);
         startSpeechButton.setOnClickListener(this);
+
         presenter.init();
 
 
@@ -69,6 +75,7 @@ public class NoteActivity extends AppCompatActivity implements SwipeMenuListView
                 SwipeMenuItem close = new SwipeMenuItem(getApplicationContext());
                 close.setBackground(new ColorDrawable(Color.rgb(245, 112, 79)));
                 close.setWidth(dp2px(90));
+                close.setIcon(resize(getDrawable(R.drawable.remove_second_img)));
                 menu.addMenuItem(close);
             }
         };
@@ -86,19 +93,27 @@ public class NoteActivity extends AppCompatActivity implements SwipeMenuListView
         listView.setOnItemClickListener(this);
     }
 
+    private Drawable resize(Drawable image) {
+        Bitmap b = ((BitmapDrawable)image).getBitmap();
+        Bitmap bitmapResized = Bitmap.createScaledBitmap(b, 50, 50, false);
+        return new BitmapDrawable(getResources(), bitmapResized);
+    }
+
     @Override
     public void onSwipeStart(int position) {
-
+        startSpeechButton.hide();
     }
 
     @Override
     public void onSwipeEnd(int position) {
-
+        if(position <= 3){
+            startSpeechButton.show();
+        }
     }
 
     @Override
     public boolean onMenuItemClick(int position, SwipeMenu menu, int index) {
-        presenter.deleteNote(notes.get(position));
+        presenter.deleteNote(notes.get(notes.size()-1-position));
         return false;
     }
 
@@ -131,6 +146,6 @@ public class NoteActivity extends AppCompatActivity implements SwipeMenuListView
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-        presenter.vocalize(notes.get(i));
+        presenter.vocalize(notes.get(notes.size()-1-i));
     }
 }
